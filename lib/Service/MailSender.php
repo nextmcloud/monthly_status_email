@@ -205,6 +205,8 @@ class MailSender {
 			return true;
 		}
 
+		
+
 		// Add tips to randomly selected messages
 		$availableGenericMessages = [MessageProvider::TIP_DISCOVER_PARTNER, MessageProvider::TIP_EMAIL_CENTER, MessageProvider::TIP_FILE_RECOVERY, MessageProvider::TIP_MORE_STORAGE];
 
