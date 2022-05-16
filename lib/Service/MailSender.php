@@ -25,8 +25,7 @@ declare(strict_types=1);
 
 namespace OCA\MonthlyStatusEmail\Service;
 
-use Icewind\SMB\IServer;
-use OC\Files\FileInfo;
+use OCP\Files\FileInfo;
 use OCA\MonthlyStatusEmail\Db\NotificationTracker;
 use OCP\DB\Exception;
 use OCP\IConfig;
@@ -159,11 +158,11 @@ class MailSender {
 			// Message no quota
 			$this->provider->writeStorageNoQuota($emailTemplate, $storageInfo);
 			return false;
-		} elseif ($storageInfo['usage_relative'] < 90) {
+		} elseif ($storageInfo['relative'] < 90) {
 			// Message quota but less than 90% used
 			$this->provider->writeStorageSpaceLeft($emailTemplate, $storageInfo);
 			return false;
-		} elseif ($storageInfo['usage_relative'] < 99) {
+		} elseif ($storageInfo['relative'] < 99) {
 			$this->provider->writeStorageWarning($emailTemplate, $storageInfo);
 			return true;
 		} else {
