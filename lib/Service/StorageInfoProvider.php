@@ -13,11 +13,10 @@ class StorageInfoProvider {
 	 * @throws \OCP\Files\NotFoundException
 	 */
 	public function getStorageInfo(IUser $user): array {
-		
 		\OC_Util::setupFS($user->getUID());
-		
+
 		// return storage info without adding mount points
-		$includeExtStorage = \OC::$server->getSystemConfig()->getValue('quota_include_external_storage', false);
+		$includeExtStorage = \OC::$server->getConfig()->getSystemValueBool('quota_include_external_storage', false);
 		$view = new View("/" . $user->getUID() . "/files");
 		$fullPath = $view->getAbsolutePath('');
 
@@ -25,7 +24,7 @@ class StorageInfoProvider {
 		if (!$rootInfo instanceof \OCP\Files\FileInfo) {
 			throw new \OCP\Files\NotFoundException();
 		}
-		$used = $rootInfo->getSize($includeMountPoints);
+		$used = $rootInfo->getSize(true);
 		if ($used < 0) {
 			$used = 0;
 		}

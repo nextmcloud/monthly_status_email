@@ -59,15 +59,22 @@ class SendAllMail extends Base {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-			$trackedNotifications = $this->service->findAll();
-			foreach ($trackedNotifications as $trackedNotification) {
-				$ret = $this->mailSender->sendMonthlyMailTo($trackedNotification);
-			if ($ret) {
-				$output->writeln('Email sent to ' . $trackedNotification->getUserId());
-			} else {
-				$output->writeln('Failure sending email to ' . $trackedNotification->getUserId());
+		$this->userManager->callForSeenUsers(function (IUser $user) use ($output) {
+			$trackedNotification = $this->service->find($user->getUID());
+
+			$to = $user->getEMailAddress();
+			if ($to === null) {
+				// We don't have any email address, not sure what to do here.
+				$output->writeln('<error>User doesn\'t have an email address</error>');
+				return;
 			}
-		}
+			$ret = $this->mailSender->sendMonthlyMailTo($trackedNotification);
+			if ($ret) {
+				$output->writeln('Email sent to ' . ($user->getDisplayName() ?? $user->getUID()));
+			} else {
+				$output->writeln('Failure sending email to ' . $user->getDisplayName());
+			}
+		});
 		return 0;
 	}
 }

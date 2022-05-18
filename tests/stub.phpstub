@@ -1,5 +1,15 @@
 <?php
 
+class OC_Util {
+    static function setupFS($userId) {}
+}
+
+namespace OC\Files\Storage\Wrapper {
+    class Quota extends \OCP\Files\Storage\IStorage {
+        public function getQuota(): int {}
+    }
+}
+
 namespace {
 	use OCP\IServerContainer;
 
@@ -97,5 +107,7 @@ namespace OC\Files {
 		public function __construct(string $path) {}
 		public function unlink($path) {}
 		public function getDirectoryContent($path) {}
+		public function getFileInfo($path, $ext): ?\OCP\Files\FileInfo {}
+		public function getAbsolutePath(string $path): string {}
 	}
 }

@@ -12,9 +12,4 @@
       <code>NotificationTracker[]</code>
     </InvalidReturnType>
   </file>
-  <file src="lib/Service/StorageInfoProvider.php">
-    <UndefinedClass occurrences="1">
-      <code>\OC_Util</code>
-    </UndefinedClass>
-  </file>
 </files>
