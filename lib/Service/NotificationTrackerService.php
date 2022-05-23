@@ -45,6 +45,7 @@ class NotificationTrackerService {
 
 	/**
 	 * @throws NotFoundException
+	 *  @return never
 	 */
 	private function handleException(\Exception $e) {
 		if ($e instanceof DoesNotExistException ||
@@ -139,6 +140,15 @@ class NotificationTrackerService {
 		}
 	}
 
+	/** @return NotificationTracker[] */
+	public function findAll(): array {
+		try {
+			return $this->mapper->findAll();
+		} catch (Exception $e) {
+			$this->handleException($e);
+		}
+	}
+	
 	public function uptadeOptedOutByToken(string $token, bool $optedOut): void {
 		try {
 			$this->mapper->updateOptedOutByToken($token, $optedOut);
