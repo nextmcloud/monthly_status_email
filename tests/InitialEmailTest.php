@@ -65,11 +65,7 @@ class InitialEmailTest extends TestCase {
 		$this->container->expects($this->any())
 			->method('get')
 			->willReturnCallback(function ($class) {
-				if ($class === MessageProvider::class) {
 					return $this->provider;
-				} else {
-					return \OC::$server->get($class);
-				}
 			});
 		$this->firstLoginListener = new FirstLoginListener($this->mailer, $this->service, $this->config, $this->container);
 	}
@@ -116,7 +112,6 @@ class InitialEmailTest extends TestCase {
 			->method('createEmailTemplate')
 			->withAnyParameters()
 			->willReturn($template);
-
 		$this->provider->expects($this->once())
 			->method('writeOptOutMessage')
 			->withAnyParameters();

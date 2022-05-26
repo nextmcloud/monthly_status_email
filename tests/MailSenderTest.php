@@ -105,11 +105,7 @@ class MailSenderTest extends TestCase {
 		$this->container->expects($this->any())
 			->method('get')
 			->willReturnCallback(function ($class) {
-				if ($class === MessageProvider::class) {
 					return $this->provider;
-				} else {
-					return \OC::$server->get($class);
-				}
 			});
 		$this->userManager = $this->createMock(IUserManager::class);
 		$this->shareManager = $this->createMock(IManager::class);
@@ -171,7 +167,7 @@ class MailSenderTest extends TestCase {
 			->willReturn([
 				'quota' => 100,
 				'used' => 100,
-				'usage_relative' => 100,
+				'relative' => 100,
 			]);
 
 		$this->provider->expects($this->once())
@@ -186,7 +182,7 @@ class MailSenderTest extends TestCase {
 			->willReturn([
 				'quota' => 100,
 				'used' => 95,
-				'usage_relative' => 95,
+				'relative' => 95,
 			]);
 
 		$this->provider->expects($this->once())
@@ -201,7 +197,7 @@ class MailSenderTest extends TestCase {
 			->willReturn([
 				'quota' => 100,
 				'used' => 50,
-				'usage_relative' => 50,
+				'relative' => 50,
 			]);
 
 		$this->provider->expects($this->once())
@@ -217,9 +213,9 @@ class MailSenderTest extends TestCase {
 			->method('writeGenericMessage')
 			->with($this->template, $this->user, MessageProvider::NO_FILE_UPLOAD);
 
-		$this->shareManager->expects($this->never())
+			$this->shareManager->expects($this->atLeastOnce())
 			->method('getSharesBy')
-			->willReturn([]);
+			->willReturn([0]);
 
 		$this->mailSender->sendMonthlyMailTo($this->trackedNotification);
 	}
@@ -230,7 +226,7 @@ class MailSenderTest extends TestCase {
 			->willReturn([
 				'quota' => 100,
 				'used' => 50,
-				'usage_relative' => 50,
+				'relative' => 50,
 			]);
 
 		$this->provider->expects($this->once())
