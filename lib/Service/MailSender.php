@@ -126,6 +126,7 @@ class MailSender {
 	}
 
 	private function setUpMail(IMessage $message, NotificationTracker $trackedNotification, IUser $user): ?IEMailTemplate {
+		
 		$to = $user->getEMailAddress();
 		if ($to === null) {
 			// We don't have any email address, not sure what to do here.
@@ -158,11 +159,11 @@ class MailSender {
 			// Message no quota
 			$this->provider->writeStorageNoQuota($emailTemplate, $storageInfo);
 			return false;
-		} elseif ($storageInfo['usage_relative'] < 90) {
+		} elseif ($storageInfo['relative'] < 90) {
 			// Message quota but less than 90% used
 			$this->provider->writeStorageSpaceLeft($emailTemplate, $storageInfo);
 			return false;
-		} elseif ($storageInfo['usage_relative'] < 99) {
+		} elseif ($storageInfo['relative'] < 99) {
 			$this->provider->writeStorageWarning($emailTemplate, $storageInfo);
 			return true;
 		} else {
@@ -176,64 +177,62 @@ class MailSender {
 	 * @return bool Whether a notification was sent
 	 */
 	public function sendMonthlyMailTo(NotificationTracker $trackedNotification): bool {
+		
 		$message = $this->mailer->createMessage();
 		$user = $this->userManager->get($trackedNotification->getUserId());
-		if ($user === null) {
-			$this->service->delete($trackedNotification);
-			return false;
-		}
-		if ($user->getLastLogin() === 0) {
-			$this->service->delete($trackedNotification);
-			return false;
-		}
-
+		// if ($user === null) {
+		// 	$this->service->delete($trackedNotification);
+		// 	return false;
+		// }
+		// if ($user->getLastLogin() === 0) {
+		// 	$this->service->delete($trackedNotification);
+		// 	return false;
+		// }
 		$emailTemplate = $this->setUpMail($message, $trackedNotification, $user);
-		if ($emailTemplate === null) {
-			return false;
-		}
-
+		// if ($emailTemplate === null) {
+		// 	return false;
+		// }
+		
 		// Handle storage specific events
-		$stop = $this->handleStorage($emailTemplate, $user);
+		// $stop = $this->handleStorage($emailTemplate, $user);
 
-		if ($stop) {
-			// Urgent storage warning, show it and don't display anything else
-			$this->sendEmail($emailTemplate, $user, $message);
-			return true;
-		}
-
-		if ($trackedNotification->getOptedOut()) {
-			// People opting-out of the monthly emails should still get the
-			// 'urgent' email about running out of storage, but the rest
-			// shouldn't be sent.
-			return false;
-		}
-
+		// if ($stop) {
+		// 	// Urgent storage warning, show it and don't display anything else
+		// 	$this->sendEmail($emailTemplate, $user, $message);
+		// 	return true;
+		// }
+		
+		// if ($trackedNotification->getOptedOut()) {
+		// 	// People opting-out of the monthly emails should still get the
+		// 	// 'urgent' email about running out of storage, but the rest
+		// 	// shouldn't be sent.
+		// 	return false;
+		// }
+		
 		// Handle share specific events
 		$shareCount = $this->handleShare($user);
 		$this->provider->writeShareMessage($emailTemplate, $shareCount);
-
+		
 		// Handle no file upload
-		if ($this->noFileUploadedDetector->hasNotUploadedFiles($user)) {
-			// No file/folder uploaded
-			$this->provider->writeGenericMessage($emailTemplate, $user, MessageProvider::NO_FILE_UPLOAD);
-			$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
-			return true;
-		}
-
+		// if ($this->noFileUploadedDetector->hasNotUploadedFiles($user)) {
+		// 	// No file/folder uploaded
+		// 	$this->provider->writeGenericMessage($emailTemplate, $user, MessageProvider::NO_FILE_UPLOAD);
+		// 	$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
+		// 	return true;
+		// }
 		
 
 		// Add tips to randomly selected messages
-		$availableGenericMessages = [MessageProvider::TIP_DISCOVER_PARTNER, MessageProvider::TIP_EMAIL_CENTER, MessageProvider::TIP_FILE_RECOVERY, MessageProvider::TIP_MORE_STORAGE];
-
-		if ($shareCount === 0) {
-			$availableGenericMessages[] = MessageProvider::NO_SHARE_AVAILABLE;
-		}
-
+		//$availableGenericMessages = [MessageProvider::TIP_DISCOVER_PARTNER, MessageProvider::TIP_EMAIL_CENTER, MessageProvider::TIP_FILE_RECOVERY, MessageProvider::TIP_MORE_STORAGE];
+		// if ($shareCount === 0) {
+		// 	$availableGenericMessages[] = MessageProvider::NO_SHARE_AVAILABLE;
+		// }
+		
 		// Handle desktop/mobile client connection detection
-		$availableGenericMessages = array_merge($availableGenericMessages, $this->handleClientCondition($user));
-
+		//$availableGenericMessages = array_merge($availableGenericMessages, $this->handleClientCondition($user));
 		// Choose one of the less urgent message randomly
-		$this->provider->writeGenericMessage($emailTemplate, $user, $availableGenericMessages[array_rand($availableGenericMessages)]);
+		//$this->provider->writeGenericMessage($emailTemplate, $user, $availableGenericMessages[array_rand($availableGenericMessages)]);
+		
 		$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
 		return true;
 	}
