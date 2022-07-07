@@ -180,58 +180,58 @@ class MailSender {
 		
 		$message = $this->mailer->createMessage();
 		$user = $this->userManager->get($trackedNotification->getUserId());
-		// if ($user === null) {
-		// 	$this->service->delete($trackedNotification);
-		// 	return false;
-		// }
-		// if ($user->getLastLogin() === 0) {
-		// 	$this->service->delete($trackedNotification);
-		// 	return false;
-		// }
+		if ($user === null) {
+			$this->service->delete($trackedNotification);
+			return false;
+		}
+		if ($user->getLastLogin() === 0) {
+			$this->service->delete($trackedNotification);
+			return false;
+		}
 		$emailTemplate = $this->setUpMail($message, $trackedNotification, $user);
-		// if ($emailTemplate === null) {
-		// 	return false;
-		// }
+		if ($emailTemplate === null) {
+			return false;
+		}
 		
 		// Handle storage specific events
-		// $stop = $this->handleStorage($emailTemplate, $user);
+		$stop = $this->handleStorage($emailTemplate, $user);
 
-		// if ($stop) {
-		// 	// Urgent storage warning, show it and don't display anything else
-		// 	$this->sendEmail($emailTemplate, $user, $message);
-		// 	return true;
-		// }
+		if ($stop) {
+			// Urgent storage warning, show it and don't display anything else
+			$this->sendEmail($emailTemplate, $user, $message);
+			return true;
+		}
 		
-		// if ($trackedNotification->getOptedOut()) {
-		// 	// People opting-out of the monthly emails should still get the
-		// 	// 'urgent' email about running out of storage, but the rest
-		// 	// shouldn't be sent.
-		// 	return false;
-		// }
+		if ($trackedNotification->getOptedOut()) {
+			// People opting-out of the monthly emails should still get the
+			// 'urgent' email about running out of storage, but the rest
+			// shouldn't be sent.
+			return false;
+		}
 		
 		// Handle share specific events
 		$shareCount = $this->handleShare($user);
 		$this->provider->writeShareMessage($emailTemplate, $shareCount);
 		
 		// Handle no file upload
-		// if ($this->noFileUploadedDetector->hasNotUploadedFiles($user)) {
-		// 	// No file/folder uploaded
-		// 	$this->provider->writeGenericMessage($emailTemplate, $user, MessageProvider::NO_FILE_UPLOAD);
-		// 	$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
-		// 	return true;
-		// }
+		if ($this->noFileUploadedDetector->hasNotUploadedFiles($user)) {
+			// No file/folder uploaded
+			$this->provider->writeGenericMessage($emailTemplate, $user, MessageProvider::NO_FILE_UPLOAD);
+			$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
+			return true;
+		}
 		
 
 		// Add tips to randomly selected messages
-		//$availableGenericMessages = [MessageProvider::TIP_DISCOVER_PARTNER, MessageProvider::TIP_EMAIL_CENTER, MessageProvider::TIP_FILE_RECOVERY, MessageProvider::TIP_MORE_STORAGE];
-		// if ($shareCount === 0) {
-		// 	$availableGenericMessages[] = MessageProvider::NO_SHARE_AVAILABLE;
-		// }
+		$availableGenericMessages = [MessageProvider::TIP_DISCOVER_PARTNER, MessageProvider::TIP_EMAIL_CENTER, MessageProvider::TIP_FILE_RECOVERY, MessageProvider::TIP_MORE_STORAGE];
+		if ($shareCount === 0) {
+			$availableGenericMessages[] = MessageProvider::NO_SHARE_AVAILABLE;
+		}
 		
 		// Handle desktop/mobile client connection detection
-		//$availableGenericMessages = array_merge($availableGenericMessages, $this->handleClientCondition($user));
+		$availableGenericMessages = array_merge($availableGenericMessages, $this->handleClientCondition($user));
 		// Choose one of the less urgent message randomly
-		//$this->provider->writeGenericMessage($emailTemplate, $user, $availableGenericMessages[array_rand($availableGenericMessages)]);
+		$this->provider->writeGenericMessage($emailTemplate, $user, $availableGenericMessages[array_rand($availableGenericMessages)]);
 		
 		$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
 		return true;
