@@ -67,8 +67,8 @@ class NotificationTrackerMapper extends QBMapper {
 	 * @throws \OCP\DB\Exception
 	 */
 	public function findAllOlderThan(\DateTimeInterface $date, int $limit): array {
+		echo $limit;
 		$qb = $this->db->getQueryBuilder();
-
 		$qb->select('*')
 			->from($this->getTableName())
 			->where(
