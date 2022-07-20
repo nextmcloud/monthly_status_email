@@ -73,7 +73,7 @@ class SendNotificationsJob extends TimedJob {
 	 */
 	protected function run($argument): void {
 		$limit = (int)$this->config->getAppValue($this->appName, 'status-email-max-mail-sent', '1000');
-		$trackedNotifications = $this->service->findAllOlderThan(new \DateTime("-2 day"), $limit);
+		$trackedNotifications = $this->service->findAllOlderThan(new \DateTime("-1 month"), $limit);
 				// for debugging
 		 //$trackedNotifications = $this->service->findAllOlderThan(new \DateTime('now()'), $limit);
 		foreach ($trackedNotifications as $trackedNotification) {
