@@ -52,20 +52,15 @@ class SendAllMail extends Base {
 	}
 
 	protected function configure() {
-		$this
-						->setName('monthly_status_email:send-all')
-						->setDescription('Send the notification mail to all users');
+		$this->setName('monthly_status_email:send-all')
+			->setDescription('Send the notification mail to all users');
 		parent::configure();
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$trackedNotifications = $this->service->findAll();
 		foreach ($trackedNotifications as $trackedNotification) {
-			try {
-				$ret = $this->mailSender->sendMonthlyMailTo($trackedNotification);
-			} catch (\Exception $e) {
-				$output->writeln('Failure sending email to ' . $trackedNotification->getUserId());
-			}
+			$ret = $this->mailSender->sendMonthlyMailTo($trackedNotification);
 			if ($ret) {
 				$output->writeln('Email sent to ' .  $trackedNotification->getUserId());
 			} else {
