@@ -159,11 +159,11 @@ class MailSender {
 			// Message no quota
 			$this->provider->writeStorageNoQuota($emailTemplate, $storageInfo);
 			return false;
-		} elseif ($storageInfo['relative'] < 90) {
+		} elseif ($storageInfo['usage_relative'] < 90) {
 			// Message quota but less than 90% used
 			$this->provider->writeStorageSpaceLeft($emailTemplate, $storageInfo);
 			return false;
-		} elseif ($storageInfo['relative'] < 99) {
+		} elseif ($storageInfo['usage_relative'] < 99) {
 			$this->provider->writeStorageWarning($emailTemplate, $storageInfo);
 			return true;
 		} else {
