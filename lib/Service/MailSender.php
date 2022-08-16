@@ -248,8 +248,8 @@ class MailSender {
 			return;
 		}
 
-		$this->provider->writeWelcomeMail($emailTemplate, $user->getDisplayName());
-		$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
+		//$this->provider->writeWelcomeMail($emailTemplate, $user->getDisplayName());
+		//$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
 	}
 
 	private function sendEmail(IEMailTemplate $template, IUser $user, IMessage $message, ?NotificationTracker $trackedNotification = null): void {
