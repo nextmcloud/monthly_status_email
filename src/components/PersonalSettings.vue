@@ -1,15 +1,15 @@
 <template>
 	<div id="monthly-notifications-settings" class="section">
-		<h2>{{ t('monthly_status_email', 'Monthly Status Email') }}</h2>
-		<p class="settings-hint">
-			{{ t('monthly_status_email', 'Receive status emails with your current storage usage as well as some helpful tips and tricks') }}
-		</p>
+		<h1>{{ t('monthly_status_email', 'Regular mails') }}</h1>
 		<p>
 			<input id="send-notifications"
 				v-model="sendNotifications"
 				type="checkbox"
 				class="checkbox">
-			<label for="send-notifications">{{ t('monthly_status_email', 'Send status email') }}</label>
+			<label for="send-notifications">{{ t('monthly_status_email', 'Monthly Status Report') }}</label>
+		</p>
+		<p class="settings-hint">
+			{{ t('monthly_status_email', 'The status report informs you monthly by email about storage space, your shares and gives you useful tips about the MagentaCLOUD.') }}
 		</p>
 	</div>
 </template>
