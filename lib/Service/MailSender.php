@@ -161,15 +161,17 @@ class MailSender {
 	public function sendMonthlyMailTo(NotificationTracker $trackedNotification): bool {
 		$message = $this->mailer->createMessage();
 		$user = $this->userManager->get($trackedNotification->getUserId());
+		
 		if ($user === null) {
 			$this->service->delete($trackedNotification);
 			return false;
 		}
+		
 		if ($user->getLastLogin() === 0) {
 			$this->service->delete($trackedNotification);
 			return false;
 		}
-
+		
 		$emailTemplate = $this->setUpMail($message, $trackedNotification, $user);
 		if ($emailTemplate === null) {
 			return false;
