@@ -167,7 +167,7 @@ class MailSender {
 			return false;
 		} else {
 			$this->provider->writeStorageFull($emailTemplate, $storageInfo);
-			return true;
+			return flase;
 		}
 	}
 
