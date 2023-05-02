@@ -61,8 +61,9 @@ class ClientDetector {
 			->select('name')
 			->where($qb->expr()->eq('uid', $qb->createNamedParameter($user->getUID())))
 			->andWhere($qb->expr()->orX(
-				$qb->expr()->eq('name', $qb->createNamedParameter('Nextcloud-iOS')),
-				$qb->expr()->like('name', $qb->createNamedParameter('%Nextcloud-android%')),
+				$qb->expr()->eq('name', $qb->createNamedParameter('%MagentaCLOUD iOS%')),
+				$qb->expr()->like('name', $qb->createNamedParameter('%Android%')),
+
 			))
 			->setMaxResults(1);
 		return $qb->executeQuery()->rowCount() === 1;

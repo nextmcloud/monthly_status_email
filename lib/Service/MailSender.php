@@ -27,6 +27,7 @@ namespace OCA\MonthlyStatusEmail\Service;
 
 use OCP\Files\FileInfo;
 use OCA\MonthlyStatusEmail\Db\NotificationTracker;
+use OCA\MonthlyStatusEmail\Service\NotificationTrackerService;
 use OCP\DB\Exception;
 use OCP\IConfig;
 use OCP\IL10N;
@@ -167,7 +168,8 @@ class MailSender {
 			return false;
 		} else {
 			$this->provider->writeStorageFull($emailTemplate, $storageInfo);
-			return true;
+			return false;
+
 		}
 	}
 
@@ -176,7 +178,7 @@ class MailSender {
 	 * @return bool Whether a notification was sent
 	 */
 	public function sendMonthlyMailTo(NotificationTracker $trackedNotification): bool {
-		$message = $this->mailer->createMessage();
+		$message = $this->mailer->createMessage();			
 		$user = $this->userManager->get($trackedNotification->getUserId());
 		
 		if ($user === null) {
@@ -207,6 +209,8 @@ class MailSender {
 			// People opting-out of the monthly emails should still get the
 			// 'urgent' email about running out of storage, but the rest
 			// shouldn't be sent.
+			$trackedNotification->setLastSendNotification(time());
+			$this->service->update($trackedNotification);
 			return false;
 		}
 
@@ -250,12 +254,13 @@ class MailSender {
 			return;
 		}
 
-		$this->provider->writeWelcomeMail($emailTemplate, $user->getDisplayName());
-		$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
+		//$this->provider->writeWelcomeMail($emailTemplate, $user->getDisplayName());
+		//$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
 	}
 
 	private function sendEmail(IEMailTemplate $template, IUser $user, IMessage $message, ?NotificationTracker $trackedNotification = null): void {
 		if ($trackedNotification !== null) {
+			
 			$this->provider->writeOptOutMessage($template, $trackedNotification);
 		}
 		$message->useTemplate($template);
