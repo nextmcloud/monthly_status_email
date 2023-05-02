@@ -81,7 +81,7 @@ class SendNotificationsJob extends TimedJob {
 		$trackedNotifications = $this->service->findAllOlderThan(new \DateTime("-1 day"), $limit);
 
 		// for debugging
-		//$trackedNotifications = $this->service->findAllOlderThan(new \DateTime('now'), $limit);
+		// $trackedNotifications = $this->service->findAllOlderThan(new \DateTime('now'), $limit);
 		foreach ($trackedNotifications as $trackedNotification) {
 			try {
 				$this->mailSender->sendMonthlyMailTo($trackedNotification);
