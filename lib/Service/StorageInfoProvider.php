@@ -3,8 +3,9 @@
 
 namespace OCA\MonthlyStatusEmail\Service;
 
-use OCP\IUser;
+use OC\Files\Storage\Wrapper\Quota;
 use OCP\Files\IRootFolder;
+use OCP\IUser;
 
 class StorageInfoProvider {
 	/**
@@ -31,8 +32,8 @@ class StorageInfoProvider {
 		$storage = $mount->getStorage();
 		$sourceStorage = $storage;
 		$internalPath = $userFolder->getInternalPath();
-		if ($sourceStorage->instanceOfStorage('\OC\Files\Storage\Wrapper\Quota')) {
-			/** @var \OC\Files\Storage\Wrapper\Quota $storage */
+		if ($sourceStorage->instanceOfStorage(Quota::class)) {
+			/** @var Quota $sourceStorage */
 			$quota = $sourceStorage->getQuota();
 		}
 

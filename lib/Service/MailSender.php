@@ -25,9 +25,9 @@ declare(strict_types=1);
 
 namespace OCA\MonthlyStatusEmail\Service;
 
-use OCP\Files\FileInfo;
 use OCA\MonthlyStatusEmail\Db\NotificationTracker;
 use OCP\DB\Exception;
+use OCP\Files\FileInfo;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\IServerContainer;
@@ -207,6 +207,8 @@ class MailSender {
 			// People opting-out of the monthly emails should still get the
 			// 'urgent' email about running out of storage, but the rest
 			// shouldn't be sent.
+			$trackedNotification->setLastSendNotification(time());
+			$this->service->update($trackedNotification);
 			return false;
 		}
 

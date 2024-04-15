@@ -1,0 +1,10 @@
+{
+  "monthly_status_email": {
+    "translations": {
+      "Monthly Status Email": "Monatlicher Statusbericht",
+      "Receive monthly status mails with a summary of usaged storage and usage hints": "Der Statusbericht informiert Sie monatlich per E-Mail über Speicherplatz, Ihre Freigaben und gibt Ihnen nützliche Tipps rund um die MagentaCLOUD.",
+      "Send status email": "Statusmail erhalten"
+    },
+    "pluralForm": "nplurals=2; plural=(n != 1);"
+  }
+}
