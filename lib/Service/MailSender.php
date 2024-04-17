@@ -150,7 +150,7 @@ class MailSender {
 			return false;
 		} else {
 			$this->provider->writeStorageFull($emailTemplate, $storageInfo);
-			return true;
+			return false;
 		}
 	}
 
@@ -237,8 +237,8 @@ class MailSender {
 			return;
 		}
 
-		$this->provider->writeWelcomeMail($emailTemplate, $user->getDisplayName());
-		$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
+		//$this->provider->writeWelcomeMail($emailTemplate, $user->getDisplayName());
+		//$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
 	}
 
 	private function sendEmail(IEMailTemplate $template, IUser $user, IMessage $message, ?NotificationTracker $trackedNotification = null): void {
@@ -280,6 +280,9 @@ class MailSender {
 				false,
 				100
 			);
+			if ($shares == null) {
+				$shares = array();
+			}
 			$shareCount += count($shares);
 			if ($shareCount > 100) {
 				break; // don't
