@@ -80,7 +80,7 @@ class PersonalSettings implements ISettings {
 		if (version_compare($this->ncVersion, '23.0.0', '<')) {
 			return 'activity';
 		}
-		return 'notifications';
+		return 'account';
 	}
 
 	/**
