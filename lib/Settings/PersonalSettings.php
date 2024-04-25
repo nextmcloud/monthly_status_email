@@ -78,9 +78,9 @@ class PersonalSettings implements ISettings {
 	 */
 	public function getSection(): string {
 		if (version_compare($this->ncVersion, '23.0.0', '<')) {
-			return 'activity';
+			return 'personal-info';
 		}
-		return 'notifications';
+		return 'personal-info';
 	}
 
 	/**

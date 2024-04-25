@@ -158,16 +158,16 @@ class MailSender {
 			// Message no quota
 			$this->provider->writeStorageNoQuota($emailTemplate, $storageInfo);
 			return false;
-		} elseif ($storageInfo['usage_relative'] < 90) {
+		} elseif ($storageInfo['relative'] < 90) {
 			// Message quota but less than 90% used
 			$this->provider->writeStorageSpaceLeft($emailTemplate, $storageInfo);
 			return false;
-		} elseif ($storageInfo['usage_relative'] < 99) {
+		} elseif ($storageInfo['relative'] < 99) {
 			$this->provider->writeStorageWarning($emailTemplate, $storageInfo);
-			return true;
+			return false;
 		} else {
 			$this->provider->writeStorageFull($emailTemplate, $storageInfo);
-			return true;
+			return false;
 		}
 	}
 
@@ -191,7 +191,7 @@ class MailSender {
 		if ($emailTemplate === null) {
 			return false;
 		}
-
+		
 		// Handle storage specific events
 		$stop = $this->handleStorage($emailTemplate, $user);
 
@@ -200,7 +200,7 @@ class MailSender {
 			$this->sendEmail($emailTemplate, $user, $message);
 			return true;
 		}
-
+		
 		if ($trackedNotification->getOptedOut()) {
 			// People opting-out of the monthly emails should still get the
 			// 'urgent' email about running out of storage, but the rest
@@ -231,7 +231,7 @@ class MailSender {
 
 		// Handle desktop/mobile client connection detection
 		$availableGenericMessages = array_merge($availableGenericMessages, $this->handleClientCondition($user));
-
+		
 		// Choose one of the less urgent message randomly
 		$this->provider->writeGenericMessage($emailTemplate, $user, $availableGenericMessages[array_rand($availableGenericMessages)]);
 		$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
@@ -250,8 +250,8 @@ class MailSender {
 			return;
 		}
 
-		$this->provider->writeWelcomeMail($emailTemplate, $user->getDisplayName());
-		$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
+		// $this->provider->writeWelcomeMail($emailTemplate, $user->getDisplayName());
+		// $this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
 	}
 
 	private function sendEmail(IEMailTemplate $template, IUser $user, IMessage $message, ?NotificationTracker $trackedNotification = null): void {
@@ -286,13 +286,16 @@ class MailSender {
 		];
 		$shareCount = 0;
 		foreach ($requestedShareTypes as $requestedShareType) {
-			$shares = $this->shareManager->getSharesBy(
+			$shares  = $this->shareManager->getSharesBy(
 				$user->getUID(),
 				$requestedShareType,
 				null,
 				false,
 				100
 			);
+			if($shares==null){
+				$shares=array();
+			}
 			$shareCount += count($shares);
 			if ($shareCount > 100) {
 				break; // don't
