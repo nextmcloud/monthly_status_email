@@ -88,16 +88,16 @@ class MailSender {
 			// Message no quota
 			$this->provider->writeStorageNoQuota($emailTemplate, $storageInfo);
 			return false;
-		} elseif ($storageInfo['usage_relative'] < 90) {
+		} elseif ($storageInfo['relative'] < 90) {
 			// Message quota but less than 90% used
 			$this->provider->writeStorageSpaceLeft($emailTemplate, $storageInfo);
 			return false;
-		} elseif ($storageInfo['usage_relative'] < 99) {
+		} elseif ($storageInfo['relative'] < 99) {
 			$this->provider->writeStorageWarning($emailTemplate, $storageInfo);
-			return true;
+			return false;
 		} else {
 			$this->provider->writeStorageFull($emailTemplate, $storageInfo);
-			return true;
+			return false;
 		}
 	}
 
@@ -108,15 +108,17 @@ class MailSender {
 	public function sendMonthlyMailTo(NotificationTracker $trackedNotification): bool {
 		$message = $this->mailer->createMessage();
 		$user = $this->userManager->get($trackedNotification->getUserId());
+		
 		if ($user === null) {
 			$this->service->delete($trackedNotification);
 			return false;
 		}
+		
 		if ($user->getLastLogin() === 0) {
 			$this->service->delete($trackedNotification);
 			return false;
 		}
-
+		
 		$emailTemplate = $this->setUpMail($message, $trackedNotification, $user);
 		if ($emailTemplate === null) {
 			return false;
@@ -152,6 +154,8 @@ class MailSender {
 			return true;
 		}
 
+		
+
 		// Add tips to randomly selected messages
 		$availableGenericMessages = [MessageProvider::TIP_DISCOVER_PARTNER, MessageProvider::TIP_EMAIL_CENTER, MessageProvider::TIP_FILE_RECOVERY, MessageProvider::TIP_MORE_STORAGE];
 
@@ -180,8 +184,8 @@ class MailSender {
 			return;
 		}
 
-		$this->provider->writeWelcomeMail($emailTemplate, $user->getDisplayName());
-		$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
+		//$this->provider->writeWelcomeMail($emailTemplate, $user->getDisplayName());
+		//$this->sendEmail($emailTemplate, $user, $message, $trackedNotification);
 	}
 
 	private function sendEmail(IEMailTemplate $template, IUser $user, IMessage $message, ?NotificationTracker $trackedNotification = null): void {
@@ -223,6 +227,9 @@ class MailSender {
 				false,
 				100
 			);
+			if ($shares == null) {
+				$shares = array();
+			}
 			$shareCount += count($shares);
 			if ($shareCount > 100) {
 				break; // don't
