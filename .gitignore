@@ -1,13 +1,19 @@
 # SPDX-FileCopyrightText: 2021 Nextcloud GmbH and Nextcloud contributors
 # SPDX-License-Identifier: AGPL-3.0-or-later
 build/
+css/
 node_modules
-vendor/
+/vendor/
+/vendor-bin/*/vendor
 js/
 
 # Editor directories and files
 .idea/
 
-# Cache files
+# PHP cache files
 .phpunit.result.cache
 .php-cs-fixer.cache
+
+# Playwright test artifacts
+/playwright-report/
+/test-results/

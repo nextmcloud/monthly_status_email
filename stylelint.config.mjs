@@ -3,9 +3,5 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
-module.exports = {
-	extends: [
-		'@nextcloud',
-		'plugin:cypress/recommended',
-	],
-}
+import stylelintConfig from '@nextcloud/stylelint-config'
+export default stylelintConfig
