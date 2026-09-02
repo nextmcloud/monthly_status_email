@@ -390,7 +390,7 @@ EOF,
 		$this->user = $user;
 		$this->l10n = $this->l10nFactory->get(
 			'monthly_status_email',
-			$this->config->getUserValue($user->getUID(), 'lang', null)
+			$this->config->getUserValue($user->getUID(), 'core', 'lang', '')
 		);
 	}
 }
